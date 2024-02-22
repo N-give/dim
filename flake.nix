@@ -37,32 +37,33 @@
           nodePackages.typescript-language-server
           python38
         ];
+
+        # RUST_SRC_PATH = "${rust-bin.nightly.latest.default.rustPlatform.rustLibSrc}";
+        PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
+        OPENSSL_DIR = "${pkgs.openssl.dev}";
+        OPENSSL_LIB_DIR = "${pkgs.openssl.out}/lib";
+
+        shellHook =
+          ''
+            echo "checking for utils directory"
+            if [ ! -d 'target/release/utils' ]; then
+              echo "creating utils directory"
+              mkdir -p 'target/release/utils'
+            fi
+
+            echo "checking for ffmpeg soft link"
+            if [ ! -h 'target/release/utils/ffmpeg' ]; then
+              echo "creating soft link to ffmpeg"
+              ln -s "$(which ffmpeg)" "target/release/utils/ffmpeg"
+            fi
+
+            echo "checking for ffprobe soft link"
+            if [ ! -h 'target/release/utils/ffprobe' ]; then
+              echo "creating soft link to ffprobe"
+              ln -s "$(which ffprobe)" "target/release/utils/ffprobe"
+            fi
+          '';
       };
 
-      # RUST_SRC_PATH = "${rust-bin.nightly.latest.default.rustPlatform.rustLibSrc}";
-      PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
-      OPENSSL_DIR = "${pkgs.openssl.dev}";
-      OPENSSL_LIB_DIR = "${pkgs.openssl.out}/lib";
-
-      shellHook =
-        ''
-          echo "checking for utils directory"
-          if [ ! -d 'target/release/utils' ]; then
-            echo "creating utils directory"
-            mkdir -p 'target/release/utils'
-          fi
-
-          echo "checking for ffmpeg soft link"
-          if [ ! -h 'target/release/utils/ffmpeg' ]; then
-            echo "creating soft link to ffmpeg"
-            ln -s "$(which ffmpeg)" "target/release/utils/ffmpeg"
-          fi
-
-          echo "checking for ffprobe soft link"
-          if [ ! -h 'target/release/utils/ffprobe' ]; then
-            echo "creating soft link to ffprobe"
-            ln -s "$(which ffprobe)" "target/release/utils/ffprobe"
-          fi
-        '';
     });
 }
